@@ -15,7 +15,7 @@ namespace UniversityRegistrar.Tests
 
     public void Dispose()
     {
-      // Task.DeleteAll();
+      Student.DeleteAll();
       Course.DeleteAll();
     }
 
@@ -106,74 +106,75 @@ namespace UniversityRegistrar.Tests
       //Assert
       CollectionAssert.AreEqual(testCourseList, resultCategories);
     }
-  //
-  //   [TestMethod]
-  //   public void Test_AddTask_AddsTaskToCategory()
-  //   {
-  //     //Arrange
-  //     Category testCategory = new Category("Household chores");
-  //     testCategory.Save();
-  //
-  //     Task testTask = new Task("Mow the lawn");
-  //     testTask.Save();
-  //
-  //     Task testTask2 = new Task("Water the garden");
-  //     testTask2.Save();
-  //
-  //     //Act
-  //     testCategory.AddTask(testTask);
-  //     testCategory.AddTask(testTask2);
-  //
-  //     List<Task> result = testCategory.GetTasks();
-  //     List<Task> testList = new List<Task>{testTask, testTask2};
-  //
-  //     //Assert
-  //     CollectionAssert.AreEqual(testList, result);
-  //   }
-  //
-  //   [TestMethod]
-  //   public void GetTasks_ReturnsAllCategoryTasks_TaskList()
-  //   {
-  //     //Arrange
-  //     Category testCategory = new Category("Household chores");
-  //     testCategory.Save();
-  //
-  //     Task testTask1 = new Task("Mow the lawn");
-  //     testTask1.Save();
-  //
-  //     Task testTask2 = new Task("Buy plane ticket");
-  //     testTask2.Save();
-  //
-  //     //Act
-  //     testCategory.AddTask(testTask1);
-  //     List<Task> savedTasks = testCategory.GetTasks();
-  //     List<Task> testList = new List<Task> {testTask1};
-  //
-  //     //Assert
-  //     CollectionAssert.AreEqual(testList, savedTasks);
-  //   }
-  //
-  //   [TestMethod]
-  //   public void Delete_DeletesCategoryAssociationsFromDatabase_CategoryList()
-  //   {
-  //     //Arrange
-  //     Task testTask = new Task("Mow the lawn");
-  //     testTask.Save();
-  //
-  //     string testName = "Home stuff";
-  //     Category testCategory = new Category(testName);
-  //     testCategory.Save();
-  //
-  //     //Act
-  //     testCategory.AddTask(testTask);
-  //     testCategory.Delete();
-  //
-  //     List<Category> resultTaskCategories = testTask.GetCategories();
-  //     List<Category> testTaskCategories = new List<Category> {};
-  //
-  //     //Assert
-  //     CollectionAssert.AreEqual(testTaskCategories, resultTaskCategories);
-  //   }
-  //
+
+    [TestMethod]
+    public void AddStudent_AddsStudentToJoinTable_StudentList()
+    {
+      //Arrange
+      Course testCourse = new Course("History");
+      testCourse.Save();
+
+      Student testStudent = new Student("Kaili", new DateTime(2017, 09, 22));
+      testStudent.Save();
+
+      Student testStudent2 = new Student("Michael", new DateTime(2017, 09, 22));
+      testStudent2.Save();
+
+      //Act
+      testCourse.AddStudent(testStudent);
+      testCourse.AddStudent(testStudent2);
+
+      List<Student> result = testCourse.GetStudents();
+      List<Student> testList = new List<Student>{testStudent, testStudent2};
+
+      //Assert
+      CollectionAssert.AreEqual(testList, result);
+    }
+
+    [TestMethod]
+    public void GetStudents_ReturnsAllStudentsForCourse_StudentList()
+    {
+      //Arrange
+      Course testCourse = new Course("History");
+      testCourse.Save();
+
+      Student testStudent1 = new Student("Kaili", new DateTime(2017, 09, 22));
+      testStudent1.Save();
+
+      Student testStudent2 = new Student("Michael", new DateTime(2017, 09, 22));
+      testStudent2.Save();
+
+      //Act
+      testCourse.AddStudent(testStudent1);
+      testCourse.AddStudent(testStudent2);
+
+      List<Student> savedStudents = testCourse.GetStudents();
+      List<Student> testList = new List<Student> {testStudent1, testStudent2};
+
+      //Assert
+      CollectionAssert.AreEqual(testList, savedStudents);
+    }
+
+    [TestMethod]
+    public void Delete_DeletesCourseFromCoursesAndJointTable_CourseList()
+    {
+      //Arrange
+      Student testStudent = new Student("Kaili", new DateTime(2017, 09, 22));
+      testStudent.Save();
+
+      Course testCourse = new Course("History");
+      testCourse.Save();
+
+      //Act
+      testCourse.AddStudent(testStudent);
+      testCourse.Delete();
+
+      List<Course> resultStudentCourses = testStudent.GetCourses();
+      List<Course> testStudentCourses = new List<Course> {};
+
+      //Assert
+      CollectionAssert.AreEqual(testStudentCourses, resultStudentCourses);
+    }
+
   }
 }

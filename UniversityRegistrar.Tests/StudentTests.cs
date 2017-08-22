@@ -20,7 +20,7 @@ namespace UniversityRegistrar.Tests
     }
 
     [TestMethod]
-    public void Equals_ReturnsTrueIfDescriptionsAreTheSame_Task()
+    public void Equals_ReturnsTrueIfDescriptionsAreTheSame_Student()
     {
       //Arrange, Act
       Student firstStudent = new Student("Michael", new DateTime(2017, 09, 20));
@@ -90,67 +90,67 @@ namespace UniversityRegistrar.Tests
       public void AddCourse_AddsCourseToJoinTable_CourseList()
       {
         //Arrange
-        Course testCourse = new Course("History");
-        testCourse.Save();
-
-        Student testCourse = new Student("Home stuff");
+        Student testStudent = new Student("Michael", new DateTime(2017, 09, 22));
         testStudent.Save();
 
-        //Act
-        testTask.AddStudent(testCourse);
+        Course testCourse1 = new Course("History");
+        testCourse1.Save();
+        Course testCourse2 = new Course("Physics");
+        testCourse2.Save();
 
-        List<Student> result = testTask.GetCategories();
-        List<Student> testList = new List<Student>{testStudent};
+        //Act
+        testStudent.AddCourse(testCourse1);
+        testStudent.AddCourse(testCourse2);
+
+        List<Course> result = testStudent.GetCourses();
+        List<Course> testList = new List<Course>{testCourse1, testCourse2};
 
         //Assert
         CollectionAssert.AreEqual(testList, result);
       }
 
-    // [TestMethod]
-    // public void Delete_DeletesStudentAssociationsFromDatabase_TaskList()
-    // {
-    //   //Arrange
-    //   Course testCourse = new Course("History");
-    //   testCourse.Save();
-    //
-    //   Student testStudent = new Student("Kaili", new DateTime(2017,09,  22));
-    //   testStudent.Save();
-    //
-    //   //Act
-    //   testStudent.AddCourse(testCourse);
-    //   testStudent.Delete();
-    //
-    //   List<Student> resultCourseStudents = testCourse.GetStudents();
-    //   List<Student> testCourseStudents = new List<Student> {};
-    //
-    //   //Assert
-    //   CollectionAssert.AreEqual(testCourseStudents, resultCourseStudents);
-    // }
+    [TestMethod]
+    public void Delete_DeletesStudentAssociationsFromDatabase_StudentList()
+    {
+      //Arrange
+      Course testCourse = new Course("History");
+      testCourse.Save();
 
-//
-//     [TestMethod]
-//     public void GetCategories_ReturnsAllTaskCategories_CourseList()
-//     {
-//       //Arrange
-//       Task testTask = new Task("Mow the lawn");
-//       testTask.Save();
-//
-//       Category testCategory1 = new Category("Home stuff");
-//       testCategory1.Save();
-//
-//       Category testCategory2 = new Category("Work stuff");
-//       testCategory2.Save();
-//
-//       //Act
-//       testTask.AddCategory(testCategory1);
-//       List<Category> result = testTask.GetCategories();
-//       List<Category> testList = new List<Category> {testCategory1};
-//
-//       //Assert
-//       CollectionAssert.AreEqual(testList, result);
-//     }
-//
+      Student testStudent = new Student("Kaili", new DateTime(2017,09,  22));
+      testStudent.Save();
 
-//
+      //Act
+      testStudent.AddCourse(testCourse);
+      testStudent.Delete();
+
+      List<Student> resultCourseStudents = testCourse.GetStudents();
+      List<Student> testCourseStudents = new List<Student> {};
+
+      //Assert
+      CollectionAssert.AreEqual(testCourseStudents, resultCourseStudents);
+    }
+
+    [TestMethod]
+    public void GetCourses_ReturnsAllCourseStudents_CourseList()
+    {
+      //Arrange
+      Student testStudent = new Student("Michael", new DateTime(2017, 09, 22));
+      testStudent.Save();
+
+      Course testCourse1 = new Course("History");
+      testCourse1.Save();
+
+      Course testCourse2 = new Course("Physics");
+      testCourse2.Save();
+
+      //Act
+      testStudent.AddCourse(testCourse1);
+      testStudent.AddCourse(testCourse2);
+      List<Course> result = testStudent.GetCourses();
+      List<Course> testList = new List<Course> {testCourse1, testCourse2};
+
+      //Assert
+      CollectionAssert.AreEqual(testList, result);
+    }
   }
 }

@@ -8,11 +8,13 @@ namespace UniversityRegistrar.Models
   {
     private int _id;
     private string _name;
+    private int _departmentId;
 
-    public Course(string name, int Id = 0)
+    public Course(string name, int departmentId, int Id = 0)
     {
       _id = Id;
       _name = name;
+      _departmentId = departmentId;
     }
 
     public int GetId()
@@ -23,6 +25,10 @@ namespace UniversityRegistrar.Models
     public string GetName()
     {
       return _name;
+    }
+    public int GetDepartmentId()
+    {
+      return _departmentId;
     }
 
     public override bool Equals(System.Object otherCourse)
@@ -36,7 +42,8 @@ namespace UniversityRegistrar.Models
         Course newCourse = (Course) otherCourse;
         bool idEquality = (this.GetId() == newCourse.GetId());
         bool nameEquality = (this.GetName() == newCourse.GetName());
-        return (idEquality && nameEquality);
+        bool departmentIdEquality = (this.GetDepartmentId() == newCourse.GetDepartmentId());
+        return (idEquality && nameEquality && departmentIdEquality);
       }
     }
 
@@ -52,12 +59,17 @@ namespace UniversityRegistrar.Models
        conn.Open();
 
        var cmd = conn.CreateCommand() as MySqlCommand;
-       cmd.CommandText = @"INSERT INTO courses (name) VALUES (@courseName);";
+       cmd.CommandText = @"INSERT INTO courses (name, department_id) VALUES (@courseName, @departmentId);";
 
        MySqlParameter nameParameter = new MySqlParameter();
        nameParameter.ParameterName = "@courseName";
        nameParameter.Value = this._name;
        cmd.Parameters.Add(nameParameter);
+
+       MySqlParameter departmentIdParameter = new MySqlParameter();
+       departmentIdParameter.ParameterName = "@departmentId";
+       departmentIdParameter.Value = this._departmentId;
+       cmd.Parameters.Add(departmentIdParameter);
 
        cmd.ExecuteNonQuery();
        _id = (int) cmd.LastInsertedId;
@@ -80,6 +92,7 @@ namespace UniversityRegistrar.Models
        {
          int courseId = rdr.GetInt32(0);
          string courseName = rdr.GetString(1);
+         int departmentId = rdr.GetInt32(2);
          Course newCourse = new Course(courseName, courseId);
          allCourses.Add(newCourse);
        }
@@ -121,13 +134,15 @@ namespace UniversityRegistrar.Models
 
       int courseId = 0;
       string courseName = "";
+      int departmentId = "";
 
       while (rdr.Read())
       {
         courseId = rdr.GetInt32(0);
         courseName = rdr.GetString(1);
+        departmentId = rdr.GetInt32(2);
       }
-      Course foundCourse= new Course(courseName, courseId);
+      Course foundCourse= new Course(courseName, departmentId, courseId);
       conn.Close();
       if (conn != null)
       {
@@ -155,64 +170,66 @@ namespace UniversityRegistrar.Models
       }
     }
 
-    // public void AddCategory(Category newCategory)
-    // {
-    //   MySqlConnection conn = DB.Connection();
-    //   conn.Open();
-    //   var cmd = conn.CreateCommand() as MySqlCommand;
-    //   cmd.CommandText = @"INSERT INTO categories_tasks (category_id, task_id) VALUES (@CategoryId, @TaskId);";
-    //
-    //   MySqlParameter category_id = new MySqlParameter();
-    //   category_id.ParameterName = "@CategoryId";
-    //   category_id.Value = newCategory.GetId();
-    //   cmd.Parameters.Add(category_id);
-    //
-    //   MySqlParameter task_id = new MySqlParameter();
-    //   task_id.ParameterName = "@TaskId";
-    //   task_id.Value = _id;
-    //   cmd.Parameters.Add(task_id);
-    //
-    //   cmd.ExecuteNonQuery();
-    //   conn.Close();
-    //   if (conn != null)
-    //   {
-    //       conn.Dispose();
-    //   }
-    // }
-    //
-    //
-    // public List<Category> GetCategories()
-    // {
-    //   MySqlConnection conn = DB.Connection();
-    //   conn.Open();
-    //   var cmd = conn.CreateCommand() as MySqlCommand;
-    //   cmd.CommandText = @"SELECT categories.*
-    //     FROM categories
-    //     JOIN categories_tasks ON (categories.id = categories_tasks.category_id)
-    //     JOIN tasks ON(tasks.id = categories_tasks.task_id)
-    //     WHERE task_id = @taskId;";
-    //
-    //   MySqlParameter taskIdParameter = new MySqlParameter();
-    //   taskIdParameter.ParameterName = "@taskId";
-    //   taskIdParameter.Value = _id;
-    //   cmd.Parameters.Add(taskIdParameter);
-    //
-    //   var rdr = cmd.ExecuteReader() as MySqlDataReader;
-    //   List<Category> categories = new List<Category> {};
-    //     while(rdr.Read())
-    //     {
-    //       int thisCategoryId = rdr.GetInt32(0);
-    //       string categoryName = rdr.GetString(1);
-    //       Category foundCategory = new Category(categoryName, thisCategoryId);
-    //       categories.Add(foundCategory);
-    //     }
-    //   conn.Close();
-    //   if (conn != null)
-    //   {
-    //     conn.Dispose();
-    //   }
-    //   return categories;
-    // }
+    public void AddStudent(Student newStudent)
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"INSERT INTO courses_students (course_id, student_id) VALUES (@CourseId, @StudentId);";
+
+      MySqlParameter studentIdParameter = new MySqlParameter();
+      studentIdParameter.ParameterName = "@StudentId";
+      studentIdParameter.Value = newStudent.GetId();
+      cmd.Parameters.Add(studentIdParameter);
+
+      MySqlParameter courseIdParameter = new MySqlParameter();
+      courseIdParameter.ParameterName = "@CourseId";
+      courseIdParameter.Value = _id;
+      cmd.Parameters.Add(courseIdParameter);
+
+      cmd.ExecuteNonQuery();
+      conn.Close();
+      if (conn != null)
+      {
+          conn.Dispose();
+      }
+    }
+
+
+    public List<Student> GetStudents()
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"SELECT students.*
+        FROM students
+        JOIN courses_students ON (students.id = courses_students.student_id)
+        JOIN courses ON(courses.id = courses_students.course_id)
+        WHERE course_id = @courseId;";
+
+      MySqlParameter courseIdParameter = new MySqlParameter();
+      courseIdParameter.ParameterName = "@courseId";
+      courseIdParameter.Value = _id;
+      cmd.Parameters.Add(courseIdParameter);
+
+      var rdr = cmd.ExecuteReader() as MySqlDataReader;
+      List<Student> allStudents = new List<Student> {};
+        while(rdr.Read())
+        {
+          int thisStudentId = rdr.GetInt32(0);
+          string studentName = rdr.GetString(1);
+          DateTime enrollmentDate = rdr.GetDateTime(2);
+          int departmentId = rdr.GetInt32(3);
+          Student foundStudent = new Student(studentName, enrollmentDate, thisStudentId);
+          allStudents.Add(foundStudent);
+        }
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return allStudents;
+    }
 
 
   }
